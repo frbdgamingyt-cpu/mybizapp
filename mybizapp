@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>frbd top up</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#28a745">
+  <style>
+    body{font-family:Arial;margin:0;background:#f8f9fa;color:#333;text-align:center}
+    header{background:#28a745;color:#fff;padding:15px}
+    ul{list-style:none;padding:0}
+    li{background:#fff;margin:10px;padding:10px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    input,button{padding:10px;margin:5px;border:1px solid #ccc;border-radius:6px}
+    button{background:#28a745;color:#fff;border:none;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header><h1>🛍️ আমার ব্যবসা</h1></header>
+  <h2>📦 প্রোডাক্ট লিস্ট</h2>
+  <ul id="products"></ul>
+
+  <h2>📩 অর্ডার দিন</h2>
+  <form id="orderForm">
+    <input id="name" placeholder="আপনার নাম" required>
+    <input id="product" placeholder="প্রোডাক্ট" required>
+    <input id="qty" type="number" placeholder="পরিমাণ" required>
+    <button type="submit">অর্ডার করুন</button>
+  </form>
+  <p id="msg"></p>
+
+  <script>
+    // প্রোডাক্ট
+    const items = ["25 dimond - 24 টাকা","120 dimond - ৮০ টাকা",wekly - ১৬০ টাকা"];
+    const ul=document.getElementById("products");
+    items.forEach(i=>{let li=document.createElement("li");li.textContent=i;ul.appendChild(li);});
+
+    // অর্ডার
+    document.getElementById("orderForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      const n=document.getElementById("name").value;
+      const p=document.getElementById("product").value;
+      const q=document.getElementById("qty").value;
+      document.getElementById("msg").textContent=`✅ ধন্যবাদ ${n}, আপনার ${q} ${p} অর্ডার রিসিভ হয়েছে।`;
+      e.target.reset();
+    });
+
+    // সার্ভিস ওয়ার্কার রেজিস্টার
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
+{
+  "name": "আমার ব্যবসার অ্যাপ",
+  "short_name": "আমারবিজ",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#28a745",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+const CACHE_NAME = "mybiz-v1";
+const FILES_TO_CACHE = [
+  "/",
+  "/index.html",
+  "/manifest.json"
+];
+
+self.addEventListener("install", e=>{
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(c=>c.addAll(FILES_TO_CACHE))
+  );
+});
+
+self.addEventListener("fetch", e=>{
+  e.respondWith(
+    caches.match(e.request).then(r=> r || fetch(e.request))
+  );
+});
